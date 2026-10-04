@@ -11,11 +11,23 @@ public class Config
 {
     public string ID { get; private set; }
 
+    /// <summary>
+    /// The path to the file a configuration last read the values from
+    /// </summary>
     public string? FilePath { get; set; }
 
+    /// <summary>
+    /// All values are stored as strings, use TryGetInt(), TryGetFloat(), etc. to get values as different types
+    /// </summary>
     public Dictionary<string, string> Values { get; set; } = [];
 
+    /// <summary>
+    /// GetBool() uses this array to determine if the values is true
+    /// </summary>
     public static string[] TrueStrings = ["1", "true", "yes"];
+    /// <summary>
+    /// GetBool() uses this array to determine if the values is false
+    /// </summary>
     public static string[] FalseStrings = ["0", "false", "no"];
 
     public Config(string id)
@@ -23,6 +35,10 @@ public class Config
         ID = id;
     }
 
+    /// <summary>
+    /// This function loads values from a file
+    /// </summary>
+    /// <param name="filePath"></param>
     public void LoadValues(string? filePath = null)
     {
         FilePath = filePath ?? FilePath;
@@ -36,8 +52,18 @@ public class Config
         Values = GetValuesFromFile(FilePath, out Dictionary<string, string> newValues) ? newValues : Values;
     }
 
+    /// <summary>
+    /// This function returns true if the configuration's values contain an ID
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     public bool Contains(string id) => Values.ContainsKey(id);
 
+    /// <summary>
+    /// Adds a value to the configuration
+    /// </summary>
+    /// <param name="valueId"></param>
+    /// <param name="rawValue"></param>
     public void AddValue(string valueId, object rawValue)
     {
         string value = rawValue.ToString()!;
@@ -48,6 +74,11 @@ public class Config
         }
     }
 
+    /// <summary>
+    /// Returns a raw value
+    /// </summary>
+    /// <param name="valueId"></param>
+    /// <returns></returns>
     public string GetRawValue(string valueId)
     {
         if (!Values.TryGetValue(valueId, out string? value))
@@ -59,6 +90,13 @@ public class Config
         return value;
     }
 
+    /// <summary>
+    /// Safely gets a raw value
+    /// </summary>
+    /// <param name="valueId"></param>
+    /// <param name="value"></param>
+    /// <param name="defaultValue"></param>
+    /// <returns></returns>
     public bool TryGetRawValue(string valueId, out string? value, string defaultValue = "")
     {
         bool success = Values.TryGetValue(valueId, out value);
@@ -66,6 +104,11 @@ public class Config
         return success;
     } 
 
+    /// <summary>
+    /// Returns an integer value
+    /// </summary>
+    /// <param name="valueId"></param>
+    /// <returns></returns>
     public int GetInt(string valueId)
     {
         string raw = GetRawValue(valueId);
@@ -79,6 +122,13 @@ public class Config
         return value;
     }
 
+    /// <summary>
+    /// Safely gets an integer value
+    /// </summary>
+    /// <param name="valueId"></param>
+    /// <param name="value"></param>
+    /// <param name="defaultValue"></param>
+    /// <returns></returns>
     public bool TryGetInt(string valueId, out int value, int defaultValue = 0)
     {
         if (!TryGetRawValue(valueId, out string? raw))
@@ -92,6 +142,11 @@ public class Config
         return success;
     } 
 
+    /// <summary>
+    /// Returns a float value
+    /// </summary>
+    /// <param name="valueId"></param>
+    /// <returns></returns>
     public float GetFloat(string valueId)
     {
         string raw = GetRawValue(valueId);
@@ -105,6 +160,13 @@ public class Config
         return value;
     }
 
+    /// <summary>
+    /// Safely gets an float value
+    /// </summary>
+    /// <param name="valueId"></param>
+    /// <param name="value"></param>
+    /// <param name="defaultValue"></param>
+    /// <returns></returns>
     public bool TryGetFloat(string valueId, out float value, float defaultValue = 0)
     {
         if (!TryGetRawValue(valueId, out string? raw))
@@ -118,6 +180,11 @@ public class Config
         return success;
     }
 
+    /// <summary>
+    /// Returns a double value
+    /// </summary>
+    /// <param name="valueId"></param>
+    /// <returns></returns>
     public double GetDouble(string valueId)
     {
         string raw = GetRawValue(valueId);
@@ -131,6 +198,13 @@ public class Config
         return value;
     }
 
+    /// <summary>   
+    /// Safely gets an double value
+    /// </summary>
+    /// <param name="valueId"></param>
+    /// <param name="value"></param>
+    /// <param name="defaultValue"></param>
+    /// <returns></returns>
     public bool TryGetDouble(string valueId, out double value, double defaultValue = 0)
     {
         if (!TryGetRawValue(valueId, out string? raw))
@@ -144,6 +218,12 @@ public class Config
         return success;
     } 
 
+    /// <summary>
+    /// Returns a boolean value
+    /// </summary>
+    /// <param name="valueId"></param>
+    /// <param name="caseSensitive"></param>
+    /// <returns></returns>
     public bool GetBool(string valueId, bool caseSensitive = false)
     {
         string raw = GetRawValue(valueId);
@@ -161,6 +241,11 @@ public class Config
         return isTrue || !isFalse;
     }
 
+    /// <summary>
+    /// Returns a string value
+    /// </summary>
+    /// <param name="valueId"></param>
+    /// <returns></returns>
     public string GetString(string valueId)
     {
         string raw = GetRawValue(valueId);
@@ -172,9 +257,12 @@ public class Config
 
     public static ErrorHandlingStyle ErrorHandlingStyle = ErrorHandlingStyle.Print;
 
+    /// <summary>
+    /// This is called when an error happens if ErrorHandlingStyle is set to LoggerFunction
+    /// </summary>
     public static Action<string>? ErrorLoggingFunction = null;
 
-    private static Dictionary<string, Config> _allConfigs = [];
+    public static Dictionary<string, Config> AllConfigs { get; set; } = [];
 
     private static void HandleError(string errorMessage)
     {
@@ -198,14 +286,25 @@ public class Config
         }
     }
 
+    /// <summary>
+    /// Creates an empty configuration
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     public static Config Create(string id)
     {
         Config config = new(id);
-        _allConfigs.Add(id, config);
+        AllConfigs.Add(id, config);
 
         return config;
     }
 
+    /// <summary>
+    /// Reads values from a file
+    /// </summary>
+    /// <param name="filePath"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
     public static bool GetValuesFromFile(string filePath, out Dictionary<string, string> values)
     {
         values = [];
@@ -241,6 +340,12 @@ public class Config
         return true;
     }
 
+    /// <summary>
+    /// Creates a new configuration and loads its values from a file
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="filePath"></param>
+    /// <returns></returns>
     public static Config CreateFromFile(string id, string filePath)
     {
         Config config = new(id)
@@ -250,18 +355,34 @@ public class Config
         
         config.LoadValues(filePath);
 
-        _allConfigs.Add(id, config);
+        AllConfigs.Add(id, config);
 
         return config;
     }
 
-    public static Config? Get(string id)
+    /// <summary>
+    /// Checks if a configuration exists
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public static bool Exists(string id)
     {
-        if (!_allConfigs.TryGetValue(id, out Config? config))
+        return AllConfigs.ContainsKey(id);
+    }
+
+    /// <summary>
+    /// Returns a configuration 
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public static bool Get(string id, out Config? config)
+    {
+        if (!AllConfigs.TryGetValue(id, out config))
         {
             HandleError($"No config called '{id}' was found!");
+            return false;
         }
         
-        return config;
+        return true;
     }
 }

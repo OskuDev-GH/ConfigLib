@@ -17,7 +17,6 @@ The documentation is inside `ConfigLib.cs`.
 
 ## Examples
 ### Hello, world!
-`
 using ConfigLib;
 
 internal class Program
@@ -37,10 +36,8 @@ internal class Program
         Console.WriteLine(config.GetString("hello_world"));
     }
 }
-`
 
 ### Get sum of all numbers in configuration
-`
 using ConfigLib;
 
 internal class Program
@@ -88,4 +85,3 @@ internal class Program
         }
     }
 }
-`

@@ -242,6 +242,36 @@ public class Config
     }
 
     /// <summary>
+    /// Safely gets a boolean value
+    /// </summary>
+    /// <param name="valueId"></param>
+    /// <param name="value"></param>
+    /// <param name="defaultValue"></param>
+    /// <param name="caseSensitive"></param>
+    /// <returns></returns>
+    public bool TryGetBool(string valueId, out bool value, bool defaultValue = false, bool caseSensitive = false)
+    {
+        if (!TryGetRawValue(valueId, out bool? raw))
+        {
+            value = defaultValue;
+            return false;
+        }
+
+        if (!caseSensitive) raw = raw.ToLower();
+
+        bool isTrue = TrueStrings.Contains(raw);
+        bool isFalse = FalseStrings.Contains(raw);
+
+        if (!isTrue && !isFalse)
+        {
+            HandleError($"Invalid bool: {raw}");
+            return false;
+        }
+
+        return isTrue || !isFalse;
+    } 
+
+    /// <summary>
     /// Returns a string value
     /// </summary>
     /// <param name="valueId"></param>
@@ -252,6 +282,27 @@ public class Config
 
         return raw.StartsWith('"') && raw.EndsWith('"') ? raw[1..^1] : raw;
     }
+
+    /// <summary>
+    /// Safely gets a string value
+    /// </summary>
+    /// <param name="valueId"></param>
+    /// <param name="value"></param>
+    /// <param name="defaultValue"></param>
+    /// <returns></returns>
+    public bool TryGetString(string valueId, out string value, string defaultValue = "")
+    {
+        if (!TryGetRawValue(valueId, out string? raw))
+        {
+            value = defaultValue;
+            return false;
+        }
+
+        raw = raw.StartsWith('"') && raw.EndsWith('"') ? raw[1..^1] : raw;
+        bool success = double.TryParse(raw, out value);
+        value = success ? value : defaultValue;
+        return success;
+    } 
 
     public static implicit operator string(Config config) => config.ID;
 

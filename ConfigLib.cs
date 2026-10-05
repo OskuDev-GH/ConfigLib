@@ -1,4 +1,6 @@
-﻿namespace ConfigLib;
+﻿using System.Globalization;
+
+namespace ConfigLib;
 
 public enum ErrorHandlingStyle
 {
@@ -9,6 +11,8 @@ public enum ErrorHandlingStyle
 
 public class Config
 {
+    public static CultureInfo Culture = new("en-US");
+
     public string ID { get; private set; }
 
     /// <summary>
@@ -95,12 +99,10 @@ public class Config
     /// </summary>
     /// <param name="valueId"></param>
     /// <param name="value"></param>
-    /// <param name="defaultValue"></param>
     /// <returns></returns>
-    public bool TryGetRawValue(string valueId, out string? value, string defaultValue = "")
+    public bool TryGetRawValue(string valueId, out string? value)
     {
         bool success = Values.TryGetValue(valueId, out value);
-        value = success ? value : defaultValue;
         return success;
     } 
 
@@ -113,7 +115,7 @@ public class Config
     {
         string raw = GetRawValue(valueId);
 
-        if (!int.TryParse(raw, out int value))
+        if (!int.TryParse(raw, Culture, out int value))
         {
             HandleError($"Invalid int: {value}");
             return 0;
@@ -127,18 +129,17 @@ public class Config
     /// </summary>
     /// <param name="valueId"></param>
     /// <param name="value"></param>
-    /// <param name="defaultValue"></param>
     /// <returns></returns>
-    public bool TryGetInt(string valueId, out int value, int defaultValue = 0)
+    public bool TryGetInt(string valueId, out int value)
     {
+        value = 0;
+
         if (!TryGetRawValue(valueId, out string? raw))
         {
-            value = defaultValue;
             return false;
         }
 
-        bool success = int.TryParse(raw, out value);
-        value = success ? value : defaultValue;
+        bool success = int.TryParse(raw, Culture, out value);
         return success;
     } 
 
@@ -151,7 +152,7 @@ public class Config
     {
         string raw = GetRawValue(valueId);
 
-        if (!float.TryParse(raw, out float value))
+        if (!float.TryParse(raw, Culture, out float value))
         {
             HandleError($"Invalid float: {value}");
             return 0;
@@ -165,18 +166,17 @@ public class Config
     /// </summary>
     /// <param name="valueId"></param>
     /// <param name="value"></param>
-    /// <param name="defaultValue"></param>
     /// <returns></returns>
-    public bool TryGetFloat(string valueId, out float value, float defaultValue = 0)
+    public bool TryGetFloat(string valueId, out float value)
     {
+        value = 0;
+
         if (!TryGetRawValue(valueId, out string? raw))
         {
-            value = defaultValue;
             return false;
         }
 
-        bool success = float.TryParse(raw, out value);
-        value = success ? value : defaultValue;
+        bool success = float.TryParse(raw, Culture, out value);
         return success;
     }
 
@@ -189,7 +189,7 @@ public class Config
     {
         string raw = GetRawValue(valueId);
 
-        if (!double.TryParse(raw, out double value))
+        if (!double.TryParse(raw, Culture, out double value))
         {
             HandleError($"Invalid double: {value}");
             return 0;
@@ -203,18 +203,17 @@ public class Config
     /// </summary>
     /// <param name="valueId"></param>
     /// <param name="value"></param>
-    /// <param name="defaultValue"></param>
     /// <returns></returns>
-    public bool TryGetDouble(string valueId, out double value, double defaultValue = 0)
+    public bool TryGetDouble(string valueId, out double value)
     {
+        value = 0;
+
         if (!TryGetRawValue(valueId, out string? raw))
         {
-            value = defaultValue;
             return false;
         }
 
-        bool success = double.TryParse(raw, out value);
-        value = success ? value : defaultValue;
+        bool success = double.TryParse(raw, Culture, out value);
         return success;
     } 
 
@@ -246,18 +245,18 @@ public class Config
     /// </summary>
     /// <param name="valueId"></param>
     /// <param name="value"></param>
-    /// <param name="defaultValue"></param>
     /// <param name="caseSensitive"></param>
     /// <returns></returns>
-    public bool TryGetBool(string valueId, out bool value, bool defaultValue = false, bool caseSensitive = false)
+    public bool TryGetBool(string valueId, out bool value, bool caseSensitive = false)
     {
-        if (!TryGetRawValue(valueId, out bool? raw))
+        value = false;
+
+        if (!TryGetRawValue(valueId, out string? raw))
         {
-            value = defaultValue;
             return false;
         }
 
-        if (!caseSensitive) raw = raw.ToLower();
+        if (!caseSensitive) raw = raw!.ToLower();
 
         bool isTrue = TrueStrings.Contains(raw);
         bool isFalse = FalseStrings.Contains(raw);
@@ -268,7 +267,8 @@ public class Config
             return false;
         }
 
-        return isTrue || !isFalse;
+        value = isTrue || !isFalse;
+        return true;
     } 
 
     /// <summary>
@@ -288,20 +288,17 @@ public class Config
     /// </summary>
     /// <param name="valueId"></param>
     /// <param name="value"></param>
-    /// <param name="defaultValue"></param>
     /// <returns></returns>
-    public bool TryGetString(string valueId, out string value, string defaultValue = "")
+    public bool TryGetString(string valueId, out string value)
     {
         if (!TryGetRawValue(valueId, out string? raw))
         {
-            value = defaultValue;
+            value = "";
             return false;
         }
 
-        raw = raw.StartsWith('"') && raw.EndsWith('"') ? raw[1..^1] : raw;
-        bool success = double.TryParse(raw, out value);
-        value = success ? value : defaultValue;
-        return success;
+        value = raw!.StartsWith('"') && raw.EndsWith('"') ? raw[1..^1] : raw;
+        return true;
     } 
 
     public static implicit operator string(Config config) => config.ID;
@@ -358,9 +355,20 @@ public class Config
     /// <returns></returns>
     public static bool GetValuesFromFile(string filePath, out Dictionary<string, string> values)
     {
+        return GetValuesFromString(File.ReadAllText(filePath), out values);
+    }
+
+    /// <summary>
+    /// Reads values from a string
+    /// </summary>
+    /// <param name="file"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    public static bool GetValuesFromString(string file, out Dictionary<string, string> values)
+    {
         values = [];
 
-        string[] lines = [.. File.ReadLines(filePath)];
+        string[] lines = file.Split(["\n\r", "\n", "\r"], StringSplitOptions.RemoveEmptyEntries);
 
         foreach (string line in lines)
         {

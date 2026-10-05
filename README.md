@@ -1,22 +1,28 @@
 # ConfigLib
 A bad configuration file system for C#
 
-## NO AI WAS USED WHILE MAKING THIS
+## Important info
+Generative AI has **NOT** been and **NEVER** will be used to work on this project.
+
+## Why should I use ConfigLib?
+There's no reason.
 
 ## How can I use ConfigLib in my project?
-### Option A:
-  copy `ConfigLib.cs` to your project
+### Option A: Copying files
+  Copy `ConfigLib.cs` into your project.
 
-### Option B: Adding a project reference to ConfigLib
+### Option B: Adding a project reference
   If you're using Visual Studio, you can right click Depedencies in your project in the solution explorer and then click `Add Project Reference`.
   If you prefer using commands, you can do `dotnet add reference [ConfigLib's location]/ConfigLib.csproj` in the project's directory.
 
-After doing either option A or option B, you can add `using ConfigLib;` into your file.
+After doing either option A or option B, add `using ConfigLib;` into your file.
+Now you should be ready to use ConfigLib.
 
 The documentation is inside `ConfigLib.cs`.
 
 ## Examples
 ### Hello, world!
+```cs
 using ConfigLib;
 
 internal class Program
@@ -33,11 +39,15 @@ internal class Program
         //load values from config.txt to a configuration called test
         Config config = Config.CreateFromFile("test", "config.txt");
 
-        Console.WriteLine(config.GetString("hello_world"));
+        //get value of hello_world safely
+        config.TryGetString("hello_world", out string helloWorld);
+        Console.WriteLine(helloWorld);
     }
 }
+```
 
 ### Get sum of all numbers in configuration
+```cs
 using ConfigLib;
 
 internal class Program
@@ -85,3 +95,4 @@ internal class Program
         }
     }
 }
+```

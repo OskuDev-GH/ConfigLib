@@ -13,9 +13,11 @@ There's no reason.
 
 ### Option B: Adding a project reference
   If you're using Visual Studio, you can right click Depedencies in your project in the solution explorer and then click `Add Project Reference`.
+  
   If you prefer using commands, you can do `dotnet add reference [ConfigLib's location]/ConfigLib.csproj` in the project's directory.
 
 After doing either option A or option B, add `using ConfigLib;` into your file.
+
 Now you should be ready to use ConfigLib.
 
 The documentation is inside `ConfigLib.cs`.

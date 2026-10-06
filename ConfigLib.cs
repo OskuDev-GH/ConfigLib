@@ -11,8 +11,6 @@ public enum ErrorHandlingStyle
 
 public class Config
 {
-    public static CultureInfo? Culture;
-
     public string ID { get; private set; }
 
     /// <summary>
@@ -36,8 +34,6 @@ public class Config
 
     public Config(string id)
     {
-        Culture ??= new("en-US");
-
         ID = id;
     }
 
@@ -117,7 +113,7 @@ public class Config
     {
         string raw = GetRawValue(valueId);
 
-        if (!int.TryParse(raw, Culture, out int value))
+        if (!int.TryParse(raw.Replace(',', '.'), out int value))
         {
             HandleError($"Invalid int: {value}");
             return 0;
@@ -141,7 +137,7 @@ public class Config
             return false;
         }
 
-        bool success = int.TryParse(raw, Culture, out value);
+        bool success = int.TryParse(raw!.Replace(',', '.'), out value);
         return success;
     } 
 
@@ -154,7 +150,7 @@ public class Config
     {
         string raw = GetRawValue(valueId);
 
-        if (!float.TryParse(raw, Culture, out float value))
+        if (!float.TryParse(raw.Replace(',', '.'), out float value))
         {
             HandleError($"Invalid float: {value}");
             return 0;
@@ -178,7 +174,7 @@ public class Config
             return false;
         }
 
-        bool success = float.TryParse(raw, Culture, out value);
+        bool success = float.TryParse(raw!.Replace(',', '.'), out value);
         return success;
     }
 
@@ -191,7 +187,7 @@ public class Config
     {
         string raw = GetRawValue(valueId);
 
-        if (!double.TryParse(raw, Culture, out double value))
+        if (!double.TryParse(raw.Replace(',', '.'), out double value))
         {
             HandleError($"Invalid double: {value}");
             return 0;
@@ -215,7 +211,7 @@ public class Config
             return false;
         }
 
-        bool success = double.TryParse(raw, Culture, out value);
+        bool success = double.TryParse(raw!.Replace(',', '.'), out value);
         return success;
     } 
 

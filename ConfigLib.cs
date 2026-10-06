@@ -11,7 +11,7 @@ public enum ErrorHandlingStyle
 
 public class Config
 {
-    public static CultureInfo Culture = new("en-US");
+    public static CultureInfo? Culture;
 
     public string ID { get; private set; }
 
@@ -36,6 +36,8 @@ public class Config
 
     public Config(string id)
     {
+        Culture ??= new("en-US");
+
         ID = id;
     }
 

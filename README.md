@@ -12,15 +12,58 @@ There's no reason.
   Copy `ConfigLib.cs` into your project.
 
 ### Option B: Adding a project reference
-  If you're using Visual Studio, you can right click Depedencies in your project in the solution explorer and then click `Add Project Reference`.
+Clone ConfigLib by running this command: `git clone https://github.com/OskuDev-GH/ConfigLib.git`
+
+If you're using Visual Studio, you can right click Depedencies in your project in the solution explorer and then click `Add Project Reference`.
   
-  If you prefer using commands, you can do `dotnet add reference [ConfigLib's location]/ConfigLib.csproj` in the project's directory.
+If you prefer using commands, you can do `dotnet add reference [ConfigLib's location]/ConfigLib.csproj` in the project's directory.
+
+
 
 After doing either option A or option B, add `using ConfigLib;` into your file.
 
 Now you should be ready to use ConfigLib.
 
-The documentation is inside `ConfigLib.cs`.
+Functions are documented (somewhat sloppily) in `ConfigLib.cs`.
+
+## Value formatting
+### Ints
+Int values are just integers.
+
+Examples:
+ - 7
+ - 69
+ - 420
+ - 1337
+
+### Floats & doubles
+Floats and doubles values are just numbers with decimal points in them.
+
+Doubles are more precise than floats.
+
+Examples:
+ - 0.7
+ - 6.9
+ - 42.0
+ - 133.7
+
+### Booleans
+Booleans are can be true or false.
+
+By default there's 3 ways to write a boolean:
+ - 1/0
+ - true/false
+ - yes/no
+
+### Strings
+All values are automatically trimmed before getting stored, so if you want to preserve whitespace characters before or after the string, use double quotes on both ends.
+
+If you want your string to start and end with quotes after formating, just use double double quotes.
+
+Examples:
+ - Hello, world! => Hello, world!
+ - "Hello, world!" => Hello, world!
+ - ""Hello, world!"" => "Hello, world!"
 
 ## Examples
 ### Hello, world!

@@ -47,7 +47,7 @@ public class Config
 
         if (FilePath == null || !File.Exists(FilePath))
         {
-            HandleError($"Couldn't reload values of '{ID}' from file!");
+            HandleError($"Couldn't load to '{ID}' from file!");
             return;
         }
         

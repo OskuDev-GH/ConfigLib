@@ -333,6 +333,26 @@ public class Config
     }
 
     /// <summary>
+    /// Returns true if a configuration called id exists
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public static bool Exists(string id)
+    {
+        return AllConfigs.ContainsKey(id);
+    }
+
+    /// <summary>
+    /// Deletes a configuration
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public static void Remove(string id)
+    {
+        AllConfigs.Remove(id);
+    }
+
+    /// <summary>
     /// Creates an empty configuration
     /// </summary>
     /// <param name="id"></param>
